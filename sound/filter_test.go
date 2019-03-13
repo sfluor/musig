@@ -1,7 +1,6 @@
 package sound
 
 import (
-	"fmt"
 	"math"
 	"testing"
 
@@ -61,7 +60,6 @@ func TestLowPassFilter(t *testing.T) {
 			values = append(values, tc.f(n*te))
 		}
 		ampl := sigAmpl(lp.Filter(values))
-		fmt.Printf("ampl = %+v\n", ampl)
 		require.Truef(t, ampl <= tc.maxAmpl, "max amplitude: expected %f (filtered) < %f (max) for '%s'", ampl, tc.maxAmpl, tc.desc)
 		require.Truef(t, tc.minAmpl <= ampl, "min amplitude: expected %f (min) < %f (filtered) for '%s'", tc.minAmpl, ampl, tc.desc)
 	}

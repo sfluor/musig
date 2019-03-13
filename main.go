@@ -28,8 +28,7 @@ func main() {
 		}
 
 		lp := sound.NewLPFilter(sound.MAXFREQ, reader.SampleRate())
-
-		filtered := lp.Filter(samples)
+		filtered := sound.Downsample(lp.Filter(samples), sound.DOWNSAMPLERATIO)
 
 		for _, sample := range filtered {
 			fmt.Printf("%f,%f\n", time, sample)
