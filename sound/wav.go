@@ -12,7 +12,7 @@ import (
 type WAVReader struct {
 	wr         *wav.Reader
 	isStereo   bool
-	sampleRate uint32
+	sampleRate float64
 }
 
 // NewWAVReader creates a new wav reader
@@ -26,12 +26,12 @@ func NewWAVReader(r riff.RIFFReader) (*WAVReader, error) {
 	return &WAVReader{
 		wr:         reader,
 		isStereo:   f.NumChannels == 2,
-		sampleRate: f.SampleRate,
+		sampleRate: float64(f.SampleRate),
 	}, nil
 }
 
 // Read reads from the given wav file and return raw audio data or an error if an error occured
-func (r *WAVReader) Read() ([]int, error) {
+func (r *WAVReader) Read() ([]float64, error) {
 	samples, err := r.wr.ReadSamples()
 	if err == io.EOF {
 		return nil, err
@@ -47,14 +47,14 @@ func (r *WAVReader) Read() ([]int, error) {
 		size *= 2
 	}
 
-	res := make([]int, 0, size)
+	res := make([]float64, 0, size)
 	for _, sample := range samples {
 		// TODO: This is not efficient, split this ?
 		if r.isStereo {
 			// We average the two entries in case of stereo
-			res = append(res, (sample.Values[0]+sample.Values[1])/2)
+			res = append(res, (float64(sample.Values[0]+sample.Values[1]))/2)
 		} else {
-			res = append(res, sample.Values[0])
+			res = append(res, float64(sample.Values[0]))
 		}
 	}
 
@@ -62,6 +62,6 @@ func (r *WAVReader) Read() ([]int, error) {
 }
 
 // SampleRate returns the sample rate for the given reader
-func (r *WAVReader) SampleRate() uint32 {
+func (r *WAVReader) SampleRate() float64 {
 	return r.sampleRate
 }

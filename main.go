@@ -27,9 +27,13 @@ func main() {
 			break
 		}
 
-		for _, sample := range samples {
-			fmt.Printf("%f,%d\n", time, sample)
-			time += 1 / float64(reader.SampleRate())
+		lp := sound.NewLPFilter(sound.MAXFREQ, reader.SampleRate())
+
+		filtered := lp.Filter(samples)
+
+		for _, sample := range filtered {
+			fmt.Printf("%f,%f\n", time, sample)
+			time += 1 / reader.SampleRate()
 		}
 	}
 }
