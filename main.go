@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/sfluor/musig/dsp"
 	"github.com/sfluor/musig/sound"
 )
 
@@ -27,8 +28,8 @@ func main() {
 			break
 		}
 
-		lp := sound.NewLPFilter(sound.MAXFREQ, reader.SampleRate())
-		filtered := sound.Downsample(lp.Filter(samples), sound.DOWNSAMPLERATIO)
+		lp := dsp.NewLPFilter(dsp.MAXFREQ, reader.SampleRate())
+		filtered := dsp.Downsample(lp.Filter(samples), dsp.DOWNSAMPLERATIO)
 
 		for _, sample := range filtered {
 			fmt.Printf("%f,%f\n", time, sample)
