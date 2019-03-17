@@ -6,9 +6,9 @@ import (
 	"math"
 )
 
-// Spectrogram takes a matrix of floats representing m[time][frequency] = amplitude
-// and return a spectrogram for this matrix in image format
-func Spectrogram(matrix [][]float64) image.Image {
+// SpecToImg takes a spectrogram (matrix of floats representing m[time][frequency] = amplitude)
+// and return an image
+func SpecToImg(matrix [][]float64) image.Image {
 	// TODO stop hardcoding this
 	// 10 Pixel for 1 frequency step
 	// 150 Pixels for 1 timeStep
@@ -20,7 +20,7 @@ func Spectrogram(matrix [][]float64) image.Image {
 	invMax := 1 / absMax(matrix)
 	for time, row := range matrix {
 		for freq, a := range row {
-			color := colorbar(a * invMax)
+			color := colorbar(math.Abs(a) * invMax)
 			for t := 0; t < nTime; t++ {
 				for f := 0; f < nFreq; f++ {
 					img.Set(
