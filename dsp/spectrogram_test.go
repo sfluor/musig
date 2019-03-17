@@ -9,7 +9,7 @@ import (
 )
 
 func TestSpectrogram440(t *testing.T) {
-	sampleSize := 1024.0
+	sampleSize := SAMPLESIZE
 
 	s := NewSpectrogrammer(
 		DOWNSAMPLERATIO,
@@ -51,7 +51,7 @@ func TestSpectrogram440(t *testing.T) {
 }
 
 func TestSpectrogram440And880(t *testing.T) {
-	sampleSize := 1024.0
+	sampleSize := SAMPLESIZE
 
 	s := NewSpectrogrammer(
 		DOWNSAMPLERATIO,

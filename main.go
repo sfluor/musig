@@ -17,7 +17,7 @@ func main() {
 	s := dsp.NewSpectrogrammer(
 		dsp.DOWNSAMPLERATIO,
 		dsp.MAXFREQ,
-		1024,
+		dsp.SAMPLESIZE,
 	)
 
 	spec, _, err := s.Spectrogram(file)
