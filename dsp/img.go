@@ -4,6 +4,8 @@ import (
 	"image"
 	"image/color"
 	"math"
+
+	"github.com/sfluor/musig/stats"
 )
 
 // SpecToImg takes a spectrogram (matrix of floats representing m[time][frequency] = amplitude)
@@ -40,16 +42,11 @@ func SpecToImg(matrix [][]float64) image.Image {
 }
 
 // absMax returns the maximum value of abs(mat) where mat is the given matrix
-func absMax(mat [][]float64) float64 {
-	res := 0.0
+func absMax(mat [][]float64) (max float64) {
 	for _, row := range mat {
-		for _, c := range row {
-			if math.Abs(c) > res {
-				res = math.Abs(c)
-			}
-		}
+		max = math.Max(max, stats.AbsMax(row))
 	}
-	return res
+	return max
 }
 
 // colorbar is function to map a value in [0, 1] to a color
