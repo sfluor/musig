@@ -1,12 +1,15 @@
 package sound
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/pkg/errors"
 	riff "github.com/youpy/go-riff"
 	wav "github.com/youpy/go-wav"
 )
+
+var _ Reader = &WAVReader{}
 
 // WAVReader implements the sound.Reader interface
 type WAVReader struct {
@@ -31,13 +34,18 @@ func NewWAVReader(r riff.RIFFReader) (*WAVReader, error) {
 }
 
 // Read reads from the given wav file and return raw audio data or an error if an error occured
-func (r *WAVReader) Read() ([]float64, error) {
-	samples, err := r.wr.ReadSamples()
+func (r *WAVReader) Read(dst []float64, N int) (int, error) {
+	if len(dst) != N {
+		return 0, fmt.Errorf("given dst has size %d, expected %d", len(dst), N)
+	}
+
+	// go-wav uses 4 * the number of samples we want to read as parameter
+	samples, err := r.wr.ReadSamples(uint32(N))
 	if err == io.EOF {
-		return nil, err
+		return 0, err
 	}
 	if err != nil {
-		return nil, errors.Wrap(err, "could not read samples")
+		return 0, errors.Wrap(err, "could not read samples")
 	}
 
 	// Take care of mono / stereo
@@ -47,18 +55,19 @@ func (r *WAVReader) Read() ([]float64, error) {
 		size *= 2
 	}
 
-	res := make([]float64, 0, size)
-	for _, sample := range samples {
-		// TODO: This is not efficient, split this ?
-		if r.isStereo {
+	if r.isStereo {
+		for i, sample := range samples {
 			// We average the two entries in case of stereo
-			res = append(res, (float64(sample.Values[0]+sample.Values[1]))/2)
-		} else {
-			res = append(res, float64(sample.Values[0]))
+			dst[i] = float64(sample.Values[0]+sample.Values[1]) / 2
 		}
+		return size / 2, nil
 	}
 
-	return res, nil
+	for i, sample := range samples {
+		dst[i] = float64(sample.Values[0])
+	}
+
+	return size, nil
 }
 
 // SampleRate returns the sample rate for the given reader

@@ -21,19 +21,29 @@ func main() {
 		panic(err)
 	}
 
-	var time float64
+	binSize := float64(1024)
+	// freqBinSize := reader.SampleRate() / dsp.DOWNSAMPLERATIO / binSize
+
+	lp := dsp.NewLPFilter(dsp.MAXFREQ, reader.SampleRate())
+
+	bin := make([]float64, int(binSize*dsp.DOWNSAMPLERATIO))
 	for {
-		samples, err := reader.Read()
-		if err == io.EOF {
-			break
+		n, err := reader.Read(bin, int(binSize*dsp.DOWNSAMPLERATIO))
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			fmt.Fprintf(os.Stderr, "error reading from sound file: %s\n", err)
+			os.Exit(1)
 		}
 
-		lp := dsp.NewLPFilter(dsp.MAXFREQ, reader.SampleRate())
-		filtered := dsp.Downsample(lp.Filter(samples), dsp.DOWNSAMPLERATIO)
-
-		for _, sample := range filtered {
-			fmt.Printf("%f,%f\n", time, sample)
-			time += 1 / reader.SampleRate()
-		}
+		fft := dsp.FFT(
+			dsp.Downsample(
+				lp.Filter(bin[:n]),
+				dsp.DOWNSAMPLERATIO,
+			),
+		)
+		fmt.Printf("fft = %+v\n", fft)
+		fmt.Printf("len(fft) = %+v\n", len(fft))
 	}
 }

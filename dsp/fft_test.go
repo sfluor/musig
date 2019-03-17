@@ -9,52 +9,49 @@ import (
 )
 
 func TestFFT(t *testing.T) {
-	for _, fft := range []func([]complex128) []complex128{
+	for _, fft := range []func([]float64) []float64{
 		FFT, DFT,
 	} {
 		for j, tc := range []struct {
-			input    []complex128
-			expected []complex128
+			input    []float64
+			expected []float64
 		}{
 			{
-				[]complex128{1, 0, 0, 0, 0, 0, 0, 0},
-				[]complex128{1, 1, 1, 1, 1, 1, 1, 1},
+				[]float64{1, 0, 0, 0, 0, 0, 0, 0},
+				[]float64{1, 1, 1, 1, 1, 1, 1, 1},
 			},
 			{
-				[]complex128{1, 2},
-				[]complex128{3, -1},
+				[]float64{1, 2},
+				[]float64{3, -1},
 			},
 			{
-				[]complex128{1, 2, 3},
-				[]complex128{6, -1.5 + 0.866i, -1.5 - 0.866i},
+				[]float64{1, 2, 3},
+				[]float64{6, -1.5, -1.5},
 			},
 			{
-				[]complex128{-1, 0, 1, 0},
-				[]complex128{0, -2, 0, -2},
+				[]float64{-1, 0, 1, 0},
+				[]float64{0, -2, 0, -2},
 			},
 			{
-				[]complex128{1, 2, 3, 4, 5, 6},
-				[]complex128{21, -3 + 5.196i, -3 + 1.732i, -3, -3 - 1.732i, -3 - 5.196i},
+				[]float64{1, 2, 3, 4, 5, 6},
+				[]float64{21, -3, -3, -3, -3, -3},
 			},
 		} {
 			output := fft(tc.input)
 			require.Equal(t, len(tc.expected), len(output), fmt.Sprintf("test %d", j+1))
-			for i, e := range tc.expected {
-				require.InDelta(t, real(e), real(output[i]), 0.01, fmt.Sprintf("test %d, index: %d", j+1, i+1))
-				require.InDelta(t, imag(e), imag(output[i]), 0.01, fmt.Sprintf("test %d, index: %d", j+1, i+1))
-			}
+			require.InDeltaSlice(t, tc.expected, output, 0.01, fmt.Sprintf("test %d", j+1))
 		}
 	}
 }
 
 func BenchmarkFT(b *testing.B) {
 	times := []int{10, 50, 100, 500, 1000, 5000}
-	inputs := map[int][]complex128{}
-	f := func(f float64) complex128 { return complex(math.Sin(2*f)+math.Cos(3*f), 0) }
+	inputs := map[int][]float64{}
+	f := func(f float64) float64 { return math.Sin(2*f) + math.Cos(3*f) }
 
 	// Compute inputs
 	for _, N := range times {
-		inputs[N] = make([]complex128, 0, N)
+		inputs[N] = make([]float64, 0, N)
 		for i := 0; i < N; i++ {
 			inputs[N] = append(inputs[N], f(float64(i)))
 		}
@@ -67,7 +64,7 @@ func BenchmarkFT(b *testing.B) {
 	}
 }
 
-func benchOneFT(b *testing.B, input []complex128, fft func([]complex128) []complex128) func(b *testing.B) {
+func benchOneFT(b *testing.B, input []float64, fft func([]float64) []float64) func(b *testing.B) {
 	return func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			fft(input)
