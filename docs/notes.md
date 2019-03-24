@@ -29,10 +29,12 @@ We also have to transform stereo to mono
 # Some sump up
 
 We can have a spectrogram:
+
 - From 0Hz to 5kHz
 - With a bin size of 10.7 Hz
 
-[comment]: # (TODO figure out this)
+[comment]: # 'TODO figure out this'
+
 - 512 possible frequencies (here a "frequency" is in fact a bin, this comes from the DFT, try to understand this)
 - And a unit of time of 0.1 second
 
@@ -59,3 +61,34 @@ The solution:
 
 - We then end up with a spectrogram but without the amplitude, only points (time, frequency)
 
+---
+
+# Hashing
+
+## Using anchor points and target zones
+
+### Fingerprinting
+
+Given a spectrogram like [this one](https://cdn-images-1.medium.com/max/1600/0*Y-24_LZlSLWzMSaI.) we can use anchor points and target zones to identify parts of the song when trying to match a song extract.
+
+We store each point in a target zone by hashing:
+
+- The frequency of the anchor for this target zone
+- The frequency of the point
+- Time between the anchor and the point
+
+Each hash is then represented by a _uint32_ and an additional time offset from the beginning of the song to the anchor point.
+
+To increase the accuracy of the matching process we can increase the number of points in the target zones, however this will also increase the storage and complexity of the fingerprinting part.
+If we have `N` points and a target zones of size `T` we will have roughly `N*T` hashes to compute and to store
+
+### Searching
+
+---
+
+# Docs
+
+- http://coding-geek.com/how-shazam-works/
+- https://medium.com/@treycoopermusic/how-shazam-works-d97135fb4582
+- http://hpac.rwth-aachen.de/teaching/sem-mus-17/Reports/Froitzheim.pdf
+- https://royvanrijn.com/blog/2010/06/creating-shazam-in-java/
