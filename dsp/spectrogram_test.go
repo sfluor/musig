@@ -3,8 +3,11 @@ package dsp
 import (
 	"math"
 	"os"
+	"sort"
 	"testing"
 
+	"github.com/sfluor/musig/model"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -53,13 +56,13 @@ func TestSpectrogram440(t *testing.T) {
 		}
 	}
 
-	filtered := s.HighestFreqs(spec, spr)
-	for t, freqs := range filtered {
-		for _, f := range freqs {
-			// Use 0 as amplitude since we don't care here
-			checkFreq(f, t, 0)
-		}
+	cMap := s.ConstellationMap(spec, spr)
+	for _, point := range cMap {
+		// Use 0 since we don't care here
+		checkFreq(point.Freq, point.Time, 0)
 	}
+
+	assertIsSorted(t, cMap)
 }
 
 func TestSpectrogram440And880(t *testing.T) {
@@ -109,11 +112,27 @@ func TestSpectrogram440And880(t *testing.T) {
 		}
 	}
 
-	filtered := s.HighestFreqs(spec, spr)
-	for t, freqs := range filtered {
-		for _, f := range freqs {
-			// Use 0 as amplitude since we don't care here
-			checkFreq(f, t, 0)
-		}
+	cMap := s.ConstellationMap(spec, spr)
+	for _, point := range cMap {
+		// Use 0 since we don't care here
+		checkFreq(point.Freq, point.Time, 0)
 	}
+
+	assertIsSorted(t, cMap)
+}
+
+func assertIsSorted(t *testing.T, cMap []model.ConstellationPoint) {
+	times := make([]float64, len(cMap))
+	lastTime := 0.0
+	lastFreq := 0.0
+	for i, p := range cMap {
+		times[i] = p.Time
+		if lastTime == p.Time {
+			assert.True(t, p.Freq > lastFreq)
+		}
+		lastTime = p.Time
+		lastFreq = p.Freq
+	}
+
+	assert.True(t, sort.IsSorted(sort.Float64Slice(times)))
 }

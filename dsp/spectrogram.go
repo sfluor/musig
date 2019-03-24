@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/pkg/errors"
+	"github.com/sfluor/musig/model"
 	"github.com/sfluor/musig/sound"
 	"github.com/sfluor/musig/stats"
 )
@@ -66,19 +67,21 @@ func (s *Spectrogrammer) Spectrogram(file *os.File) ([][]float64, float64, error
 		matrix = append(matrix, fft[:len(fft)-(len(fft)-1)/2-1])
 	}
 
-	s.HighestFreqs(matrix, reader.SampleRate())
+	// TODO: remove
+	s.ConstellationMap(matrix, reader.SampleRate())
 	return matrix, spr, nil
 }
 
-// HighestFreqs takes a spectrogram, it's sample rate and returns the highest frequencies and their time in the audio file
-func (s *Spectrogrammer) HighestFreqs(spec [][]float64, sampleRate float64) map[float64][]float64 {
+// ConstellationMap takes a spectrogram, it's sample rate and returns the highest frequencies and their time in the audio file
+// The returned slice is ordered by time and is ordered by frequency for a constant time
+func (s *Spectrogrammer) ConstellationMap(spec [][]float64, sampleRate float64) []model.ConstellationPoint {
 	// TODO stop hardcoding those
 	coef := 2.0
 	// For each 512-sized bins create logarithmic bands
 	// [0, 10], [10, 20], [20, 40], [40, 80], [80, 160], [160, 511]
 	bands := [][]int{{0, 10}, {10, 20}, {20, 40}, {40, 80}, {80, 160}, {160, 512}}
 
-	res := map[float64][]float64{}
+	res := []model.ConstellationPoint{}
 
 	// Frequency bin size
 	fbs := s.freqBinSize(sampleRate)
@@ -101,10 +104,9 @@ func (s *Spectrogrammer) HighestFreqs(spec [][]float64, sampleRate float64) map[
 
 		// Register the frequencies we kept and their time of apparition
 		time := float64(t) / sampleRate
-		res[time] = make([]float64, len(indices))
 
-		for i, idx := range indices {
-			res[time][i] = freqs[idx]
+		for _, idx := range indices {
+			res = append(res, model.ConstellationPoint{Time: time, Freq: freqs[idx]})
 		}
 	}
 
