@@ -5,5 +5,5 @@ import (
 )
 
 type Fingerprinter interface {
-	Fingerprint(uint32, []model.ConstellationPoint) map[model.TableKey]model.TableValue
+	Fingerprint(uint32, []model.ConstellationPoint) map[model.EncodedKey]model.TableValue
 }

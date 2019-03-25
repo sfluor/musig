@@ -21,6 +21,9 @@ type TableKey struct {
 	DeltaT float64
 }
 
+// EncodedKey represents an encoded key
+type EncodedKey uint32
+
 func NewTableKey(anchor, point ConstellationPoint) *TableKey {
 	return &TableKey{
 		AnchorFreq: anchor.Freq,
@@ -36,15 +39,16 @@ func NewTableKey(anchor, point ConstellationPoint) *TableKey {
 // 14 bits for the ”delta time between the anchor and the point”: dt
 // The result is then dt | fa | fp
 // XXX: this only works if frequencies are coded in 9 bits or less (if we used a 1024 samples FFT, it will be the case)
-func (tk *TableKey) Encode() uint32 {
+func (tk *TableKey) Encode() EncodedKey {
 	// down size params
 	fp := uint32(tk.PointFreq / freqStep)
 	fa := uint32(tk.AnchorFreq / freqStep)
 	dt := uint32(tk.DeltaT / timeStep)
+
 	res := fp
 	res |= fa << 9
 	res |= dt << 23
-	return res
+	return EncodedKey(res)
 }
 
 // TableValue represents a table value
