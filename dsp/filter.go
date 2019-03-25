@@ -4,9 +4,6 @@ import (
 	"math"
 )
 
-// MAXFREQ is 5kHz
-const MAXFREQ = float64(5000)
-
 // Filterer is the interface used for filters
 type Filterer interface {
 	Filter(arr []float64) []float64

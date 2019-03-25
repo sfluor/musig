@@ -31,7 +31,7 @@ We also have to transform stereo to mono
 We can have a spectrogram:
 
 - From 0Hz to 5kHz
-- With a bin size of 10.7 Hz
+- With a bin size of 10.7 Hz (11 025 / 1024)
 
 [comment]: # 'TODO figure out this'
 

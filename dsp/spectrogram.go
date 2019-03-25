@@ -29,7 +29,7 @@ func NewSpectrogrammer(dsRatio, maxFreq, binSize float64) *Spectrogrammer {
 // Spectrogram reads the provided audio file and returns a spectrogram for it
 // Matrix is in the following format:
 // TIME : FREQUENCY : Value
-// time is t * dsp.DOWNSAMPLERATIO / reader.SampleRate()
+// time is t * binSize * dsp.DOWNSAMPLERATIO / reader.SampleRate()
 // frequency is f * freqBinSize
 func (s *Spectrogrammer) Spectrogram(file *os.File) ([][]float64, float64, error) {
 	reader, err := sound.NewWAVReader(file)
@@ -67,13 +67,13 @@ func (s *Spectrogrammer) Spectrogram(file *os.File) ([][]float64, float64, error
 		matrix = append(matrix, fft[:len(fft)-(len(fft)-1)/2-1])
 	}
 
-	// TODO: remove
-	s.ConstellationMap(matrix, reader.SampleRate())
 	return matrix, spr, nil
 }
 
 // ConstellationMap takes a spectrogram, it's sample rate and returns the highest frequencies and their time in the audio file
-// The returned slice is ordered by time and is ordered by frequency for a constant time
+// The returned slice is ordered by time and is ordered by frequency for a constant time:
+// If two time-frequency points have the same time, the time-frequency point with the lowest frequency is before the other one.
+// If a time time-frequency point has a lower time than another point one then it is before.
 func (s *Spectrogrammer) ConstellationMap(spec [][]float64, sampleRate float64) []model.ConstellationPoint {
 	// TODO stop hardcoding those
 	coef := 2.0
@@ -85,6 +85,9 @@ func (s *Spectrogrammer) ConstellationMap(spec [][]float64, sampleRate float64) 
 
 	// Frequency bin size
 	fbs := s.freqBinSize(sampleRate)
+
+	// Time step
+	timeStep := s.dsRatio * s.binSize / sampleRate
 
 	// Maximum of amplitude and their corresponding frequencies
 	var maxs, freqs []float64
@@ -103,7 +106,7 @@ func (s *Spectrogrammer) ConstellationMap(spec [][]float64, sampleRate float64) 
 		indices := stats.ArgAbove(avg*coef, maxs)
 
 		// Register the frequencies we kept and their time of apparition
-		time := float64(t) / sampleRate
+		time := timeStep * float64(t)
 
 		for _, idx := range indices {
 			res = append(res, model.ConstellationPoint{Time: time, Freq: freqs[idx]})

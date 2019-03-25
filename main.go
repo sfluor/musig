@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/sfluor/musig/dsp"
+	"github.com/sfluor/musig/model"
 )
 
 func main() {
@@ -15,9 +16,9 @@ func main() {
 	defer file.Close()
 
 	s := dsp.NewSpectrogrammer(
-		dsp.DOWNSAMPLERATIO,
-		dsp.MAXFREQ,
-		dsp.SAMPLESIZE,
+		model.DOWNSAMPLERATIO,
+		model.MAXFREQ,
+		model.SAMPLESIZE,
 	)
 
 	spec, _, err := s.Spectrogram(file)

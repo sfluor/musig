@@ -1,11 +1,5 @@
 package dsp
 
-// DOWNSAMPLERATIO is the default down sample ratio (4)
-const DOWNSAMPLERATIO = 4
-
-// SAMPLESIZE is the default sample size (1024)
-const SAMPLESIZE = 1024.0
-
 // Downsample downsamples the given array using the given ratio by averaging
 func Downsample(arr []float64, ratio int) []float64 {
 	res := make([]float64, 0, len(arr)/ratio)
