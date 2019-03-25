@@ -9,7 +9,7 @@ import (
 const freqStep = MAXFREQ / float64(1<<9)
 
 // Used to down size the delta times to 14 bit ints (we use 16s as the max duration)
-const timeStep = 16000 / float64(1<<14)
+const deltaTimeStep = 16 / float64(1<<14)
 
 // TableKey represents a table key
 type TableKey struct {
@@ -43,7 +43,7 @@ func (tk *TableKey) Encode() EncodedKey {
 	// down size params
 	fp := uint32(tk.PointFreq / freqStep)
 	fa := uint32(tk.AnchorFreq / freqStep)
-	dt := uint32(tk.DeltaT / timeStep)
+	dt := uint32(tk.DeltaT / deltaTimeStep)
 
 	res := fp
 	res |= fa << 9
