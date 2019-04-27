@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/binary"
 	"fmt"
 	"math"
 )
@@ -34,6 +35,13 @@ func NewTableKey(anchor, point ConstellationPoint) *TableKey {
 	}
 }
 
+func (ek EncodedKey) Bytes() []byte {
+	// uint32 is 4 bytes
+	bk := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bk, uint32(ek))
+	return bk
+}
+
 // Encode encodes the table key using:
 // 9 bits for the “frequency of the anchor”: fa
 // 9 bits for the ” frequency of the point”: fp
@@ -65,6 +73,27 @@ func NewTableValue(song uint32, anchor ConstellationPoint) *TableValue {
 		AnchorTimeMs: uint32(anchor.Time * 1000),
 		SongID:       song,
 	}
+}
+
+// Bytes encodes the given table value in bytes
+func (tv *TableValue) Bytes() []byte {
+	// Use a uint64 (8 bytes)
+	b := make([]byte, 8)
+	binary.LittleEndian.PutUint32(b[:4], tv.AnchorTimeMs)
+	binary.LittleEndian.PutUint32(b[4:], tv.SongID)
+	return b
+}
+
+// ValueFromBytes decodes the given table value
+func ValueFromBytes(b []byte) (TableValue, error) {
+	if len(b) != 8 {
+		return TableValue{}, fmt.Errorf("error wrong size for value: %d (got: %v)", len(b), b)
+	}
+	// Use a uint64 (8 bytes)
+	tv := TableValue{}
+	tv.AnchorTimeMs = binary.LittleEndian.Uint32(b[:4])
+	tv.SongID = binary.LittleEndian.Uint32(b[4:])
+	return tv, nil
 }
 
 func (tv TableValue) String() string {
