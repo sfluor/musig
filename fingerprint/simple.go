@@ -6,7 +6,7 @@ import (
 
 var _ Fingerprinter = &SimpleFingerprinter{}
 
-// SimpleFingerprinter is a fingerprinter that just takes
+// SimpleFingerprinter is a fingerprinter that uses a target zone and an anchor offset
 type SimpleFingerprinter struct {
 	anchorOffset   int
 	targetZoneSize int
@@ -28,6 +28,7 @@ func NewSimpleFingerprinter(anchorOffset, targetZoneSize int) *SimpleFingerprint
 	}
 }
 
+// Fingerprint builds a fingerprint from the given constellation map
 func (sf *SimpleFingerprinter) Fingerprint(songID uint32, cMap []model.ConstellationPoint) map[model.EncodedKey]model.TableValue {
 	length := len(cMap)
 	res := map[model.EncodedKey]model.TableValue{}

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -64,4 +65,8 @@ func NewTableValue(song uint32, anchor ConstellationPoint) *TableValue {
 		AnchorTimeMs: uint32(anchor.Time * 1000),
 		SongID:       song,
 	}
+}
+
+func (tv TableValue) String() string {
+	return fmt.Sprintf("(anchor_time_ms: %d, song_id: %d)", tv.AnchorTimeMs, tv.SongID)
 }
