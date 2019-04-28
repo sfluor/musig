@@ -1,7 +1,6 @@
 package sound
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/pkg/errors"
@@ -34,13 +33,11 @@ func NewWAVReader(r riff.RIFFReader) (*WAVReader, error) {
 }
 
 // Read reads from the given wav file and return raw audio data or an error if an error occured
-func (r *WAVReader) Read(dst []float64, N int) (int, error) {
-	if len(dst) != N {
-		return 0, fmt.Errorf("given dst has size %d, expected %d", len(dst), N)
-	}
+func (r *WAVReader) Read(dst []float64) (int, error) {
+	N := uint32(len(dst))
 
 	// go-wav uses 4 * the number of samples we want to read as parameter
-	samples, err := r.wr.ReadSamples(uint32(N))
+	samples, err := r.wr.ReadSamples(N)
 	if err == io.EOF {
 		return 0, err
 	}
@@ -49,7 +46,7 @@ func (r *WAVReader) Read(dst []float64, N int) (int, error) {
 	}
 
 	// Take care of mono / stereo
-	// If sound is in stereo we want
+	// If sound is in stereo we want to get it into mono
 	size := len(samples)
 	if r.isStereo {
 		size *= 2

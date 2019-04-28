@@ -14,7 +14,6 @@ import (
 const AssetsDir = "../../../assets/test"
 
 func TestFingerprinting440(t *testing.T) {
-	path.Join()
 	testFingerprintingOnFile(t, path.Join(AssetsDir, "440.wav"))
 }
 

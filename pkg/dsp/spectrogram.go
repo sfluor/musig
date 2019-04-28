@@ -43,7 +43,7 @@ func (s *Spectrogrammer) Spectrogram(file *os.File) ([][]float64, float64, error
 
 	bin := make([]float64, int(s.binSize*s.dsRatio))
 	for {
-		n, err := reader.Read(bin, int(s.binSize*s.dsRatio))
+		n, err := reader.Read(bin)
 		if err != nil {
 			if err == io.EOF {
 				break
