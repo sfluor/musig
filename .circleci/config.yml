@@ -1,0 +1,20 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.12
+    working_directory: /go/src/github.com/sfluor/musig
+    steps:
+      - checkout
+      - run:
+          name: Setup Environment Variables
+          command: echo 'export GO111MODULE=on' >> $BASH_ENV
+      - run:
+          name: "Run go vet"
+          command: go vet -v ./...
+      - run:
+          name: "Run go test"
+          command: go test -v ./...
+      - run:
+          name: "Run go build"
+          command: go build -v ./cmd/musig
