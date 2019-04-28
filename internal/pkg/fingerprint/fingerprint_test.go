@@ -3,20 +3,24 @@ package fingerprint
 import (
 	"fmt"
 	"os"
+	"path"
 	"testing"
 
-	"github.com/sfluor/musig/dsp"
-	"github.com/sfluor/musig/model"
+	"github.com/sfluor/musig/internal/pkg/model"
+	"github.com/sfluor/musig/pkg/dsp"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+const AssetsDir = "../../../assets/test"
+
 func TestFingerprinting440(t *testing.T) {
-	testFingerprintingOnFile(t, "../data/440.wav")
+	path.Join()
+	testFingerprintingOnFile(t, path.Join(AssetsDir, "440.wav"))
 }
 
 func TestFingerprinting440And880(t *testing.T) {
-	testFingerprintingOnFile(t, "../data/440_880.wav")
+	testFingerprintingOnFile(t, path.Join(AssetsDir, "440_880.wav"))
 }
 
 func testFingerprintingOnFile(t *testing.T, path string) {

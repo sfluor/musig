@@ -3,7 +3,7 @@ package db
 import (
 	"testing"
 
-	"github.com/sfluor/musig/model"
+	"github.com/sfluor/musig/internal/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

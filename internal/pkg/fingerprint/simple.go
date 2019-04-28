@@ -1,8 +1,6 @@
 package fingerprint
 
-import (
-	"github.com/sfluor/musig/model"
-)
+import "github.com/sfluor/musig/internal/pkg/model"
 
 var _ Fingerprinter = &SimpleFingerprinter{}
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	"github.com/sfluor/musig/model"
+	"github.com/sfluor/musig/internal/pkg/model"
 	"go.etcd.io/bbolt"
 )
 

@@ -6,10 +6,10 @@ import (
 	"image/png"
 	"os"
 
-	"github.com/sfluor/musig/db"
-	"github.com/sfluor/musig/dsp"
-	"github.com/sfluor/musig/fingerprint"
-	"github.com/sfluor/musig/model"
+	"github.com/sfluor/musig/internal/pkg/db"
+	"github.com/sfluor/musig/internal/pkg/fingerprint"
+	"github.com/sfluor/musig/internal/pkg/model"
+	"github.com/sfluor/musig/pkg/dsp"
 )
 
 func main() {

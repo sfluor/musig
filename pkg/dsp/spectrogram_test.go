@@ -3,13 +3,16 @@ package dsp
 import (
 	"math"
 	"os"
+	"path"
 	"sort"
 	"testing"
 
-	"github.com/sfluor/musig/model"
+	"github.com/sfluor/musig/internal/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+const AssetsDir = "../../assets/test"
 
 func TestSpectrogram440(t *testing.T) {
 	sampleSize := model.SAMPLESIZE
@@ -20,7 +23,7 @@ func TestSpectrogram440(t *testing.T) {
 		sampleSize,
 	)
 
-	file, err := os.Open("../data/440.wav")
+	file, err := os.Open(path.Join(AssetsDir, "440.wav"))
 	require.NoError(t, err)
 	defer file.Close()
 
@@ -74,7 +77,7 @@ func TestSpectrogram440And880(t *testing.T) {
 		sampleSize,
 	)
 
-	file, err := os.Open("../data/440_880.wav")
+	file, err := os.Open(path.Join(AssetsDir, "440_880.wav"))
 	require.NoError(t, err)
 	defer file.Close()
 
