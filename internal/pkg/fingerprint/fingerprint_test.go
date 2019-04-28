@@ -1,7 +1,6 @@
 package fingerprint
 
 import (
-	"fmt"
 	"os"
 	"path"
 	"testing"
@@ -50,7 +49,6 @@ func testFingerprintingOnFile(t *testing.T, path string) {
 	table := f.Fingerprint(0, cMap)
 	subTable := f.Fingerprint(0, subCMap)
 
-	fmt.Printf("table = %+v\n", table)
 	for key := range subTable {
 		assert.Contains(t, table, key)
 	}
