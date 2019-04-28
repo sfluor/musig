@@ -6,6 +6,7 @@ import (
 	"image/png"
 	"os"
 
+	"github.com/sfluor/musig/db"
 	"github.com/sfluor/musig/dsp"
 	"github.com/sfluor/musig/fingerprint"
 	"github.com/sfluor/musig/model"
@@ -14,6 +15,7 @@ import (
 func main() {
 	audioFile := flag.String("file", "", "Audio file to process")
 	printFingerprint := flag.Bool("fingerprint", true, "enable / disable printing the fingerprint")
+	dbFile := flag.String("db", "/tmp/bolt.db", "database file to use")
 	specFile := flag.String("spec_file", "", "File where we should save the spectrogram (if not specified the spectrogram won't be saved)")
 
 	flag.Parse()
@@ -35,11 +37,25 @@ func main() {
 		panic(err)
 	}
 
+	db, err := db.NewBoltDB(*dbFile)
+	if err != nil {
+		panic(err)
+	}
+
+	cMap := s.ConstellationMap(spec, spr)
+	fpr := fingerprint.NewDefaultFingerprinter()
+
+	id, err := db.SetSong(*audioFile)
+	if err != nil {
+		panic(err)
+	}
+
+	songFpr := fpr.Fingerprint(id, cMap)
+	if err := db.Set(songFpr); err != nil {
+		panic(err)
+	}
+
 	if *printFingerprint {
-		cMap := s.ConstellationMap(spec, spr)
-		fpr := fingerprint.NewDefaultFingerprinter()
-		// TODO change ID
-		songFpr := fpr.Fingerprint(1, cMap)
 		fmt.Println("Fingerprint for the given song:")
 		for key, val := range songFpr {
 			fmt.Printf("key: %v, val: %v\n", key, val)

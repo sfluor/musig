@@ -29,38 +29,61 @@ func testDatabase(t *testing.T, db Database) {
 	// Close the database
 	defer func() { require.NoError(t, db.Close()) }()
 
-	// Should return nothing without error
-	res, err := db.Get(nil)
-	require.NoError(t, err)
-	assert.Len(t, res, 0)
+	t.Run("fingerprints", func(t *testing.T) {
+		// Should return nothing without error
+		res, err := db.Get(nil)
+		require.NoError(t, err)
+		assert.Len(t, res, 0)
 
-	m1 := genTestMap(testValues[:4])
-	err = db.Set(m1)
-	require.NoError(t, err)
+		m1 := genTestMap(testValues[:4])
+		err = db.Set(m1)
+		require.NoError(t, err)
 
-	keys := []model.EncodedKey{}
-	for k := range m1 {
-		keys = append(keys, k)
-	}
+		keys := []model.EncodedKey{}
+		for k := range m1 {
+			keys = append(keys, k)
+		}
 
-	resMap, err := db.Get(keys)
-	require.NoError(t, err)
-	assert.Len(t, resMap, len(keys))
-	assert.Equal(t, m1, resMap)
+		resMap, err := db.Get(keys)
+		require.NoError(t, err)
+		assert.Len(t, resMap, len(keys))
+		assert.Equal(t, m1, resMap)
 
-	m2 := genTestMap(testValues[4:])
-	err = db.Set(m2)
-	require.NoError(t, err)
+		m2 := genTestMap(testValues[4:])
+		err = db.Set(m2)
+		require.NoError(t, err)
 
-	keys = []model.EncodedKey{}
-	for k := range m2 {
-		keys = append(keys, k)
-	}
+		keys = []model.EncodedKey{}
+		for k := range m2 {
+			keys = append(keys, k)
+		}
 
-	resMap, err = db.Get(keys)
-	require.NoError(t, err)
-	assert.Len(t, resMap, len(keys))
-	assert.Equal(t, m2, resMap)
+		resMap, err = db.Get(keys)
+		require.NoError(t, err)
+		assert.Len(t, resMap, len(keys))
+		assert.Equal(t, m2, resMap)
+	})
+
+	t.Run("song_names", func(t *testing.T) {
+		song1 := "my song !"
+		song2 := "my second song !"
+
+		name, err := db.GetSong(10)
+		require.Error(t, err)
+		assert.Empty(t, name)
+
+		id, err := db.SetSong(song1)
+		require.NoError(t, err)
+		assert.True(t, id != 0)
+
+		id2, err := db.SetSong(song2)
+		require.NoError(t, err)
+		assert.True(t, id2 != 0)
+
+		name, err = db.GetSong(id2)
+		require.NoError(t, err)
+		assert.Equal(t, song2, name)
+	})
 }
 
 func genTestMap(tuples []testTuple) map[model.EncodedKey]model.TableValue {

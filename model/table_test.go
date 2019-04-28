@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestEncodingDecodingValue(t *testing.T) {
@@ -14,7 +15,8 @@ func TestEncodingDecodingValue(t *testing.T) {
 		{3255, 42},
 	} {
 		encoded := tv.Bytes()
-		decoded := ValueFromBytes(encoded)
+		decoded, err := ValueFromBytes(encoded)
+		require.NoError(t, err)
 		encoded2 := decoded.Bytes()
 
 		assert.Equal(t, tv, decoded)
