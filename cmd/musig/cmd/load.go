@@ -4,17 +4,15 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/pkg/errors"
-	"github.com/sfluor/musig/internal/pkg/db"
-	"github.com/sfluor/musig/internal/pkg/fingerprint"
-	"github.com/sfluor/musig/internal/pkg/model"
-	"github.com/sfluor/musig/pkg/dsp"
+	"github.com/sfluor/musig/internal/pkg/pipeline"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 func init() {
 	rootCmd.AddCommand(loadCmd)
+	loadCmd.Flags().BoolP("dry-run", "d", false, "disable saving to the database")
+	loadCmd.Flags().BoolP("verbose", "v", false, "enable verbose output")
 }
 
 // loadCmd represents the load command
@@ -31,45 +29,27 @@ var loadCmd = &cobra.Command{
 			os.Exit(0)
 		}
 
-		db, err := db.NewBoltDB(dbFile)
-		failIff(err, "error connection to database at: %s", dbFile)
-		defer db.Close()
+		p, err := pipeline.NewDefaultPipeline(dbFile)
+		failIff(err, "error creating pipeline")
+		defer p.Close()
+
+		process := p.ProcessAndStore
+
+		dryRun, err := cmd.Flags().GetBool("dry-run")
+		if dryRun && err == nil {
+			log.Info("enabling dry-run (results won't be saved to the database)")
+			process = p.Process
+		}
+
+		verbose, err := cmd.Flags().GetBool("verbose")
+		verbose = verbose && err == nil
 
 		for _, file := range files {
-			err := loadFile(db, file)
-			failIff(err, "error loading file %s", file)
+			res, err := process(file)
+			failIff(err, "error processing file %s", file)
+			if verbose {
+				log.Infof("Processed file at %s and got: %+v", file, res.Fingerprint)
+			}
 		}
 	},
-}
-
-// loadFile loads the given file in the database
-func loadFile(db db.Database, path string) error {
-	file, err := os.Open(path)
-	if err != nil {
-		return errors.Wrapf(err, "error opening file at %s", path)
-	}
-	defer file.Close()
-
-	s := dsp.NewSpectrogrammer(model.DOWNSAMPLERATIO, model.MAXFREQ, model.SAMPLESIZE)
-
-	spec, spr, err := s.Spectrogram(file)
-	if err != nil {
-		return errors.Wrap(err, "error generating spectrogram")
-	}
-
-	cMap := s.ConstellationMap(spec, spr)
-	fpr := fingerprint.NewDefaultFingerprinter()
-
-	id, err := db.SetSong(path)
-	if err != nil {
-		return errors.Wrap(err, "error storing song name in database")
-	}
-
-	songFpr := fpr.Fingerprint(id, cMap)
-	if err := db.Set(songFpr); err != nil {
-		return errors.Wrap(err, "error storing song fingerprint in database")
-	}
-
-	log.Infof("sucessfully loaded %s into the database", path)
-	return nil
 }
