@@ -14,7 +14,7 @@ import (
 // Pipeline is a struct that allows to operate on audio files
 type Pipeline struct {
 	s   *dsp.Spectrogrammer
-	db  db.Database
+	DB  db.Database
 	fpr fingerprint.Fingerprinter
 }
 
@@ -29,7 +29,7 @@ func NewDefaultPipeline(dbFile string) (*Pipeline, error) {
 
 	return &Pipeline{
 		s:   s,
-		db:  db,
+		DB:  db,
 		fpr: fpr,
 	}, nil
 }
@@ -38,14 +38,14 @@ func NewDefaultPipeline(dbFile string) (*Pipeline, error) {
 func NewPipeline(s *dsp.Spectrogrammer, db db.Database, fpr fingerprint.Fingerprinter) *Pipeline {
 	return &Pipeline{
 		s:   s,
-		db:  db,
+		DB:  db,
 		fpr: fpr,
 	}
 }
 
 // Close closes the underlying database
 func (p *Pipeline) Close() {
-	p.db.Close()
+	p.DB.Close()
 }
 
 // Result represents the output of a pipeline
@@ -66,13 +66,14 @@ func (p *Pipeline) ProcessAndStore(path string) (*Result, error) {
 		return nil, err
 	}
 
-	id, err := p.db.SetSong(path)
+	// TODO store only file name and not whole path
+	id, err := p.DB.SetSong(path)
 	if err != nil {
 		return nil, errors.Wrap(err, "error storing song name in database")
 	}
 
 	songFpr := p.fpr.Fingerprint(id, partial.cMap)
-	if err := p.db.Set(songFpr); err != nil {
+	if err := p.DB.Set(songFpr); err != nil {
 		return nil, errors.Wrap(err, "error storing song fingerprint in database")
 	}
 
