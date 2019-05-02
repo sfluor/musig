@@ -12,5 +12,6 @@ require (
 	github.com/youpy/go-riff v0.0.0-20131220112943-557d78c11efb
 	github.com/youpy/go-wav v0.0.0-20160223082350-b63a9887d320
 	go.etcd.io/bbolt v1.3.2
+	golang.org/x/sys v0.0.0-20181205085412-a5c9d58dba9a // indirect
 	gonum.org/v1/gonum v0.0.0-20190430210020-9827ae2933ff
 )

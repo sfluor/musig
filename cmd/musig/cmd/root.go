@@ -13,11 +13,11 @@ var dbFile string
 var rootCmd = &cobra.Command{
 	Use:   "musig",
 	Short: "A shazam like CLI tool",
-	Long:  `TODO`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
-func Execute() {
+func Execute(version string) {
+	rootCmd.Version = version
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprint(os.Stderr, err)
 		os.Exit(1)

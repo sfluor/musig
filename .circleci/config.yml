@@ -10,11 +10,8 @@ jobs:
           name: Setup Environment Variables
           command: echo 'export GO111MODULE=on' >> $BASH_ENV
       - run:
-          name: "Run go vet"
-          command: go vet -v ./...
+          name: "--- Testing ---"
+          command: make test
       - run:
-          name: "Run go test"
-          command: go test -v ./...
-      - run:
-          name: "Run go build"
-          command: go build -v ./cmd/musig
+          name: "--- Building ---"
+          command: make build
