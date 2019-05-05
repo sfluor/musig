@@ -9,6 +9,8 @@ A shazam-like tool that allows you to compute song's fingerprints and reverse lo
 
 You will need to have [go](https://golang.org/doc/install) on your computer (version > 1.11 to be able to use go modules).
 
+You will also need to have [portaudio](http://www.portaudio.com/) installed (`brew install portaudio`, or `apt install portaudio19-dev`)
+
 To build the binary:
 
 ```bash

@@ -33,8 +33,8 @@ cross: linux macos windows
 
 .PHONY: test
 test:
-	${GOCMD} get -t -v ./...; \
-    ${GOCMD} vet $$(go list ./... | grep -v /vendor/); \
+	${GOCMD} get -v ./...; \
+	${GOCMD} vet $$(go list ./... | grep -v /vendor/); \
 	${GOCMD} test -v -race ./...; \
 
 .PHONY: fmt

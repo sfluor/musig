@@ -10,6 +10,9 @@ jobs:
           name: Setup Environment Variables
           command: echo 'export GO111MODULE=on' >> $BASH_ENV
       - run:
+          name: "--- Install portaudio ---"
+          command: sudo apt install portaudio19-dev
+      - run:
           name: "--- Testing ---"
           command: make test
       - run:
