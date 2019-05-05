@@ -1,6 +1,10 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
+	"path/filepath"
+	"strings"
+)
 
 // DOWNSAMPLERATIO is the default down sample ratio (4)
 const DOWNSAMPLERATIO = 4
@@ -19,4 +23,10 @@ type ConstellationPoint struct {
 
 func (cp ConstellationPoint) String() string {
 	return fmt.Sprintf("(t: %f, f: %f)", cp.Time, cp.Freq)
+}
+
+// SongNameFromPath returns the song file name from the given path (removing the path and the extension)
+func SongNameFromPath(path string) string {
+	ext := filepath.Ext(path)
+	return strings.TrimRight(filepath.Base(path), ext)
 }

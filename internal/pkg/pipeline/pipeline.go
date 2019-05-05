@@ -66,8 +66,7 @@ func (p *Pipeline) ProcessAndStore(path string) (*Result, error) {
 		return nil, err
 	}
 
-	// TODO store only file name and not whole path
-	id, err := p.DB.SetSong(path)
+	id, err := p.DB.SetSong(model.SongNameFromPath(path))
 	if err != nil {
 		return nil, errors.Wrap(err, "error storing song name in database")
 	}
