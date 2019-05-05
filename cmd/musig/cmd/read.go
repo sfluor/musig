@@ -33,8 +33,10 @@ var readCmd = &cobra.Command{
 		}
 
 		m, err := p.DB.Get(keys)
-		for _, v := range m {
-			counts[v.SongID] += 1
+		for _, values := range m {
+			for _, val := range values {
+				counts[val.SongID] += 1
+			}
 		}
 
 		var song string

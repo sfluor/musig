@@ -25,7 +25,7 @@ func Execute(version string) {
 }
 
 func init() {
-	rootCmd.PersistentFlags().StringVar(&dbFile, "database", "/tmp/bolt.db", "database file to use")
+	rootCmd.PersistentFlags().StringVar(&dbFile, "database", "/tmp/musig.bolt", "database file to use")
 }
 
 func failIff(err error, msg string, args ...interface{}) {

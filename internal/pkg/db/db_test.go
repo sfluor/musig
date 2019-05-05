@@ -47,7 +47,9 @@ func testDatabase(t *testing.T, db Database) {
 		resMap, err := db.Get(keys)
 		require.NoError(t, err)
 		assert.Len(t, resMap, len(keys))
-		assert.Equal(t, m1, resMap)
+		for k, v := range m1 {
+			assert.ElementsMatch(t, []model.TableValue{v}, resMap[k])
+		}
 
 		m2 := genTestMap(testValues[4:])
 		err = db.Set(m2)
@@ -61,7 +63,52 @@ func testDatabase(t *testing.T, db Database) {
 		resMap, err = db.Get(keys)
 		require.NoError(t, err)
 		assert.Len(t, resMap, len(keys))
-		assert.Equal(t, m2, resMap)
+		for k, v := range m2 {
+			assert.ElementsMatch(t, []model.TableValue{v}, resMap[k])
+		}
+	})
+
+	t.Run("song_id_retrieval", func(t *testing.T) {
+		song1 := "my song !"
+		song2 := "my second song !"
+
+		id1, err := db.SetSong(song1)
+		require.NoError(t, err)
+
+		// Try setting the id again
+		id1Dup, err := db.SetSong(song1)
+		require.NoError(t, err)
+
+		// They should be equal
+		assert.Equal(t, id1, id1Dup)
+
+		id2, err := db.SetSong(song2)
+		require.NoError(t, err)
+
+		assert.NotEqual(t, id1, id2)
+
+		id2Dup, err := db.SetSong(song2)
+		require.NoError(t, err)
+
+		assert.Equal(t, id2, id2Dup)
+
+		// Double check the names
+		name1, err := db.GetSong(id1)
+		require.NoError(t, err)
+		assert.Equal(t, song1, name1)
+
+		name2, err := db.GetSong(id2)
+		require.NoError(t, err)
+		assert.Equal(t, song2, name2)
+
+		// And the IDs
+		songID1, err := db.GetSongID(song1)
+		require.NoError(t, err)
+		assert.Equal(t, id1, songID1)
+
+		songID2, err := db.GetSongID(song2)
+		require.NoError(t, err)
+		assert.Equal(t, id2, songID2)
 	})
 
 	t.Run("song_names", func(t *testing.T) {

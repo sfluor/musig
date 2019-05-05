@@ -45,8 +45,9 @@ func NewBoltDB(path string) (*BoltDB, error) {
 	return boltDB, errors.Wrap(err, "error creating buckets")
 }
 
-func (db *BoltDB) Get(keys []model.EncodedKey) (map[model.EncodedKey]model.TableValue, error) {
-	res := make(map[model.EncodedKey]model.TableValue, len(keys))
+// Get retrieves the provided keys' values from the bolt file
+func (db *BoltDB) Get(keys []model.EncodedKey) (map[model.EncodedKey][]model.TableValue, error) {
+	res := make(map[model.EncodedKey][]model.TableValue, len(keys))
 
 	err := db.View(func(tx *bbolt.Tx) error {
 		b := tx.Bucket(db.fingerprintBucket)
@@ -56,7 +57,7 @@ func (db *BoltDB) Get(keys []model.EncodedKey) (map[model.EncodedKey]model.Table
 			if len(raw) == 0 {
 				continue
 			}
-			val, err := model.ValueFromBytes(b.Get(k.Bytes()))
+			val, err := model.ValuesFromBytes(b.Get(k.Bytes()))
 			if err != nil {
 				return errors.Wrapf(err, "wrong record stored: %v", raw)
 			}
@@ -70,12 +71,18 @@ func (db *BoltDB) Get(keys []model.EncodedKey) (map[model.EncodedKey]model.Table
 	return res, errors.Wrap(err, "an error occured when reading from bolt")
 }
 
+// Set stores the list of (key, value) into the bolt file
 func (db *BoltDB) Set(batch map[model.EncodedKey]model.TableValue) error {
 	err := db.Update(func(tx *bbolt.Tx) error {
 		b := tx.Bucket(db.fingerprintBucket)
 
 		for k, v := range batch {
-			if err := b.Put(k.Bytes(), v.Bytes()); err != nil {
+			// We append the value to the existing array
+			// this is because multiple songs can have the same keys
+			rawKey := k.Bytes()
+			existing := b.Get(rawKey)
+
+			if err := b.Put(rawKey, append(existing, v.Bytes()...)); err != nil {
 				return errors.Wrapf(err, "error setting (key: %v, val: %v)", k, v)
 			}
 		}
@@ -85,6 +92,30 @@ func (db *BoltDB) Set(batch map[model.EncodedKey]model.TableValue) error {
 	return errors.Wrap(err, "an error occured when writing to bolt")
 }
 
+// GetSongID does a song name => songID lookup in the database
+func (db *BoltDB) GetSongID(name string) (uint32, error) {
+	var id uint32
+
+	err := db.View(func(tx *bbolt.Tx) error {
+		b := tx.Bucket(db.songBucket)
+		c := b.Cursor()
+
+		// TODO: fixme this is not really efficient
+		// Iterate over all the song records
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			if string(v) == name {
+				id = binary.LittleEndian.Uint32(k)
+				return nil
+			}
+		}
+
+		return fmt.Errorf("could not find id for song name: %s", name)
+	})
+
+	return id, errors.Wrap(err, "an error occured when reading from bolt")
+}
+
+// GetSong does a songID => song name lookup in the database
 func (db *BoltDB) GetSong(songID uint32) (string, error) {
 	var name string
 
@@ -104,10 +135,17 @@ func (db *BoltDB) GetSong(songID uint32) (string, error) {
 	return name, errors.Wrap(err, "an error occured when reading from bolt")
 }
 
+// SetSong stores a song name in the database and returns it's song ID
+// It first checks if the song is not already stored in the database
 func (db *BoltDB) SetSong(song string) (uint32, error) {
-	var songID uint32
+	// First check if we haven't the song in the db already
+	id, err := db.GetSongID(song)
+	if err == nil {
+		return id, nil
+	}
 
-	err := db.Update(func(tx *bbolt.Tx) error {
+	var songID uint32
+	err = db.Update(func(tx *bbolt.Tx) error {
 		b, err := tx.CreateBucketIfNotExists(db.songBucket)
 		if err != nil {
 			return errors.Wrapf(err, "error creating bucket")

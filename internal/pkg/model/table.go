@@ -13,6 +13,9 @@ const freqStep = MAXFREQ / float64(1<<9)
 // Used to down size the delta times to 14 bit ints (we use 16s as the max duration)
 const deltaTimeStep = 16 / float64(1<<14)
 
+// TableValueSize represents the TableValueSize when encoded in bytes
+const TableValueSize = 8
+
 // TableKey represents a table key
 type TableKey struct {
 	// Frequency of the anchor point for the given point's target zone
@@ -26,6 +29,7 @@ type TableKey struct {
 // EncodedKey represents an encoded key
 type EncodedKey uint32
 
+// NewTableKey creates a new table key from the given anchor and the given point
 func NewTableKey(anchor, point ConstellationPoint) *TableKey {
 	return &TableKey{
 		AnchorFreq: anchor.Freq,
@@ -35,6 +39,7 @@ func NewTableKey(anchor, point ConstellationPoint) *TableKey {
 	}
 }
 
+// Bytes encodes the key in bytes
 func (ek EncodedKey) Bytes() []byte {
 	// uint32 is 4 bytes
 	bk := make([]byte, 4)
@@ -68,6 +73,7 @@ type TableValue struct {
 	SongID uint32
 }
 
+// NewTableValue creates a new table value from the given song ID and anchor point
 func NewTableValue(song uint32, anchor ConstellationPoint) *TableValue {
 	return &TableValue{
 		AnchorTimeMs: uint32(anchor.Time * 1000),
@@ -78,24 +84,32 @@ func NewTableValue(song uint32, anchor ConstellationPoint) *TableValue {
 // Bytes encodes the given table value in bytes
 func (tv *TableValue) Bytes() []byte {
 	// Use a uint64 (8 bytes)
-	b := make([]byte, 8)
+	b := make([]byte, TableValueSize)
 	binary.LittleEndian.PutUint32(b[:4], tv.AnchorTimeMs)
 	binary.LittleEndian.PutUint32(b[4:], tv.SongID)
 	return b
 }
 
-// ValueFromBytes decodes the given table value
-func ValueFromBytes(b []byte) (TableValue, error) {
-	if len(b) != 8 {
-		return TableValue{}, fmt.Errorf("error wrong size for value: %d (got: %v)", len(b), b)
+// ValuesFromBytes decodes a list of table values from the given byte array
+func ValuesFromBytes(b []byte) ([]TableValue, error) {
+	if len(b)%TableValueSize != 0 {
+		return nil, fmt.Errorf("error wrong size for value: %d (got: %v) expected a multiple of %d", len(b), b, TableValueSize)
 	}
-	// Use a uint64 (8 bytes)
-	tv := TableValue{}
-	tv.AnchorTimeMs = binary.LittleEndian.Uint32(b[:4])
-	tv.SongID = binary.LittleEndian.Uint32(b[4:])
-	return tv, nil
+
+	N := len(b) / TableValueSize
+	res := make([]TableValue, 0, N)
+
+	for i := 0; i < N; i++ {
+		tv := TableValue{}
+		tv.AnchorTimeMs = binary.LittleEndian.Uint32(b[i*8 : i*8+4])
+		tv.SongID = binary.LittleEndian.Uint32(b[i*8+4 : (i+1)*8])
+		res = append(res, tv)
+	}
+
+	return res, nil
 }
 
+// String returns a string representation of a TableValue
 func (tv TableValue) String() string {
 	return fmt.Sprintf("(anchor_time_ms: %d, song_id: %d)", tv.AnchorTimeMs, tv.SongID)
 }
