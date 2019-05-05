@@ -23,6 +23,8 @@ You will then be able to run the binary with:
 
 ## Usage
 
+![musig usage](./docs/musig.gif)
+
 To do some testing you can download `wav` songs and put them in `./assets/dataset/wav/`
 
 Load them with `./bin/musig load "./assets/dataset/wav/*.wav"`
