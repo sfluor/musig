@@ -33,6 +33,10 @@ And try to find one of your song name with:
 
 `./bin/musig read "$(ls ./assets/dataset/wav/*.wav | head -n 1)"`
 
+You can also try to use it with your microphone using the `listen` command:
+
+`./bin/musig listen`
+
 For more details on the usage see the help command:
 
 ```
@@ -43,6 +47,7 @@ Usage:
 
 Available Commands:
   help        Help about any command
+  listen      listen will record the microphone input and try to find a matching song from the database (Ctrl-C will stop the recording)
   load        Load loads all the audio files matching the provided glob into the database (TODO: only .wav are supported for now)
   read        Read reads the given audio file trying to find it's song name
   spectrogram spectrogram generate a spectrogram image for the given audio file in png (TODO: only .wav are supported for now)
@@ -50,7 +55,6 @@ Available Commands:
 Flags:
       --database string   database file to use (default "/tmp/musig.bolt")
   -h, --help              help for musig
-      --version           version for musig
 
 Use "musig [command] --help" for more information about a command.
 ```
@@ -63,4 +67,4 @@ To run the tests you can use `make test` in the root directory.
 
 - [ ] improve the documentation
 - [ ] support for `mp3` files
-- [ ] `listen` to read audio from the mic
+- [ ] improve the fingerprinting (using listen gives bad results :sad:)

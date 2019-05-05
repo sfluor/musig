@@ -3,6 +3,7 @@ module github.com/sfluor/musig
 go 1.12
 
 require (
+	github.com/gordonklaus/portaudio v0.0.0-20180817120803-00e7307ccd93
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/sirupsen/logrus v1.4.1
