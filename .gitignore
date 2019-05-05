@@ -12,3 +12,6 @@
 *.out
 
 bin/*
+
+# Ignore dataset by default
+assets/dataset/*

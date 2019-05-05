@@ -25,7 +25,7 @@ You will then be able to run the binary with:
 
 ![musig usage](./docs/musig.gif)
 
-To do some testing you can download `wav` songs and put them in `./assets/dataset/wav/`
+To do some testing you can download `wav` songs by doing `make download`.
 
 Load them with `./bin/musig load "./assets/dataset/wav/*.wav"`
 
@@ -62,6 +62,5 @@ To run the tests you can use `make test` in the root directory.
 ## TODOs
 
 - [ ] improve the documentation
-- [ ] add more audio files to allow to test without having to download them separately
 - [ ] support for `mp3` files
 - [ ] `listen` to read audio from the mic

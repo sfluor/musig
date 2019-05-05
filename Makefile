@@ -44,3 +44,7 @@ fmt:
 .PHONY: tidy
 tidy:
 	${GOCMD} mod tidy
+
+.PHONY: download
+download:
+	./scripts/dl_dataset.sh

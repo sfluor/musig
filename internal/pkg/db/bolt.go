@@ -79,6 +79,7 @@ func (db *BoltDB) Set(batch map[model.EncodedKey]model.TableValue) error {
 		for k, v := range batch {
 			// We append the value to the existing array
 			// this is because multiple songs can have the same keys
+			// TODO: check if the value is not already in the database array to avoid having a same value multiple times
 			rawKey := k.Bytes()
 			existing := b.Get(rawKey)
 
