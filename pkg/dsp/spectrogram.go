@@ -15,6 +15,9 @@ type Spectrogrammer struct {
 	dsRatio float64
 	maxFreq float64
 	binSize float64
+	// thresholdCoefficient is used to filter out the important frequencies
+	// increasing it decreases the size of the constellation maps returned
+	thresholdCoefficient float64
 }
 
 // NewSpectrogrammer creates a new spectrogrammer
@@ -23,6 +26,8 @@ func NewSpectrogrammer(dsRatio, maxFreq, binSize float64) *Spectrogrammer {
 		dsRatio: dsRatio,
 		maxFreq: maxFreq,
 		binSize: binSize,
+		// TODO stop hardcoding this
+		thresholdCoefficient: 2.5,
 	}
 }
 
@@ -75,8 +80,6 @@ func (s *Spectrogrammer) Spectrogram(file *os.File) ([][]float64, float64, error
 // If two time-frequency points have the same time, the time-frequency point with the lowest frequency is before the other one.
 // If a time time-frequency point has a lower time than another point one then it is before.
 func (s *Spectrogrammer) ConstellationMap(spec [][]float64, sampleRate float64) []model.ConstellationPoint {
-	// TODO stop hardcoding those
-	coef := 2.0
 	// For each 512-sized bins create logarithmic bands
 	// [0, 10], [10, 20], [20, 40], [40, 80], [80, 160], [160, 511]
 	bands := [][]int{{0, 10}, {10, 20}, {20, 40}, {40, 80}, {80, 160}, {160, 512}}
@@ -101,9 +104,9 @@ func (s *Spectrogrammer) ConstellationMap(spec [][]float64, sampleRate float64) 
 			freqs[i] = float64(band[0]+idx) * fbs
 		}
 
-		// Keep only the bins above the average of the max bins
+		// Keep only the bins above the average times the threshold coeff of the max bins
 		avg := stats.Avg(maxs)
-		indices := stats.ArgAbove(avg*coef, maxs)
+		indices := stats.ArgAbove(avg*s.thresholdCoefficient, maxs)
 
 		// Register the frequencies we kept and their time of apparition
 		time := timeStep * float64(t)
