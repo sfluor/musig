@@ -19,8 +19,8 @@ func Correlation(x []float64, y []float64) float64 {
 		dx := xp - meanX
 		dy := y[i] - meanY
 
-		sX +=  dx * dx
-		sY +=  dy * dy
+		sX += dx * dx
+		sY += dy * dy
 
 		sXY += dx * dy
 	}

@@ -24,5 +24,6 @@ var listenCmd = &cobra.Command{
 
 		recordAudioToFile(name, dur)
 		cmdRead(name)
+		// todo remove
 	},
 }

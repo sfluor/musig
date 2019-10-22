@@ -18,7 +18,7 @@ func init() {
 var recordCmd = &cobra.Command{
 	Use:   "record",
 	Short: "record will record the microphone input and save the signal to the given file",
-	Args: cobra.MinimumNArgs(1),
+	Args:  cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		dur, err := cmd.Flags().GetDuration("duration")
 		failIff(err, "could not get duration, got: %v", dur)
@@ -28,7 +28,7 @@ var recordCmd = &cobra.Command{
 }
 
 func recordAudioToFile(name string, duration time.Duration) {
-	file ,err := os.Create(name)
+	file, err := os.Create(name)
 	failIff(err, "error creating file for recording in %s", name)
 
 	stopCh := make(chan struct{}, 1)
@@ -36,7 +36,9 @@ func recordAudioToFile(name string, duration time.Duration) {
 	signal.Notify(sig, os.Interrupt, os.Kill)
 
 	go func() {
-		defer func() { stopCh <- struct{}{} }()
+		defer func() {
+			stopCh <- struct{}{}
+		}()
 		for {
 			select {
 			case <-time.After(duration):
@@ -48,6 +50,6 @@ func recordAudioToFile(name string, duration time.Duration) {
 	}()
 
 	err = sound.RecordWAV(file, stopCh)
-	failIff(err, "an error occured recording WAV file")
+	failIff(err, "an error occurred recording WAV file")
 	failIff(file.Sync(), "error syncing temp file")
 }

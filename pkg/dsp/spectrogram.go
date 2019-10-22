@@ -27,7 +27,7 @@ func NewSpectrogrammer(dsRatio, maxFreq, binSize float64) *Spectrogrammer {
 		maxFreq: maxFreq,
 		binSize: binSize,
 		// TODO stop hardcoding this
-		thresholdCoefficient: 2.5,
+		thresholdCoefficient: 1,
 	}
 }
 
@@ -44,7 +44,7 @@ func (s *Spectrogrammer) Spectrogram(file *os.File) ([][]float64, float64, error
 
 	spr := reader.SampleRate()
 	lp := NewLPFilter(s.maxFreq, spr)
-	matrix := [][]float64{}
+	var matrix [][]float64
 
 	bin := make([]float64, int(s.binSize*s.dsRatio))
 	for {
@@ -61,21 +61,21 @@ func (s *Spectrogrammer) Spectrogram(file *os.File) ([][]float64, float64, error
 			break
 		}
 
-		fft := FFT(
-			Downsample(
-				lp.Filter(bin[:n]),
-				int(s.dsRatio),
-			),
+		sampled := Downsample(
+			lp.Filter(bin[:n]),
+			int(s.dsRatio),
 		)
+		ApplyWindow(sampled, HammingWindow)
+		fft := FFT(sampled)
 
-		// TODO remove slicing here when removing duplicate values retuned by the FFT
+		// TODO remove slicing here when removing duplicate values returned by the FFT
 		matrix = append(matrix, fft[:len(fft)-(len(fft)-1)/2-1])
 	}
 
 	return matrix, spr, nil
 }
 
-// ConstellationMap takes a spectrogram, it's sample rate and returns the highest frequencies and their time in the audio file
+// ConstellationMap takes a spectrogram, its sample rate and returns the highest frequencies and their time in the audio file
 // The returned slice is ordered by time and is ordered by frequency for a constant time:
 // If two time-frequency points have the same time, the time-frequency point with the lowest frequency is before the other one.
 // If a time time-frequency point has a lower time than another point one then it is before.
@@ -84,7 +84,7 @@ func (s *Spectrogrammer) ConstellationMap(spec [][]float64, sampleRate float64) 
 	// [0, 10], [10, 20], [20, 40], [40, 80], [80, 160], [160, 511]
 	bands := [][]int{{0, 10}, {10, 20}, {20, 40}, {40, 80}, {80, 160}, {160, 512}}
 
-	res := []model.ConstellationPoint{}
+	var res []model.ConstellationPoint
 
 	// Frequency bin size
 	fbs := s.freqBinSize(sampleRate)
