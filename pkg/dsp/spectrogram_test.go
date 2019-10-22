@@ -15,11 +15,11 @@ import (
 const AssetsDir = "../../assets/test"
 
 func TestSpectrogram440(t *testing.T) {
-	sampleSize := model.SAMPLESIZE
+	sampleSize := model.SampleSize
 
 	s := NewSpectrogrammer(
-		model.DOWNSAMPLERATIO,
-		model.MAXFREQ,
+		model.DownsampleRatio,
+		model.MaxFreq,
 		sampleSize,
 	)
 
@@ -34,7 +34,7 @@ func TestSpectrogram440(t *testing.T) {
 
 	// Threshold to remove frequencies we don't want
 	threshold := 0.5
-	freqBinSize := spr / model.DOWNSAMPLERATIO / sampleSize
+	freqBinSize := spr / model.DownsampleRatio / sampleSize
 
 	checkFreq := func(f, time, ampl float64) {
 		require.InDeltaf(
@@ -54,7 +54,7 @@ func TestSpectrogram440(t *testing.T) {
 			spec[time][f] = math.Abs(spec[time][f]) * invMax
 			if spec[time][f] > threshold {
 				// Check that the frequency of the current point is within [440 - binSize, 440 + bin Size]
-				checkFreq(float64(f)*freqBinSize, float64(time)*model.DOWNSAMPLERATIO/spr, spec[time][f])
+				checkFreq(float64(f)*freqBinSize, float64(time)*model.DownsampleRatio/spr, spec[time][f])
 			}
 		}
 	}
@@ -69,11 +69,11 @@ func TestSpectrogram440(t *testing.T) {
 }
 
 func TestSpectrogram440And880(t *testing.T) {
-	sampleSize := model.SAMPLESIZE
+	sampleSize := model.SampleSize
 
 	s := NewSpectrogrammer(
-		model.DOWNSAMPLERATIO,
-		model.MAXFREQ,
+		model.DownsampleRatio,
+		model.MaxFreq,
 		sampleSize,
 	)
 
@@ -88,7 +88,7 @@ func TestSpectrogram440And880(t *testing.T) {
 
 	// Threshold to remove frequencies we don't want
 	threshold := 0.5
-	freqBinSize := spr / model.DOWNSAMPLERATIO / sampleSize
+	freqBinSize := spr / model.DownsampleRatio / sampleSize
 
 	checkFreq := func(freq, time, ampl float64) {
 		// Check that the frequency of the current point is within [440 - binSize, 440 + bin Size]
@@ -110,7 +110,7 @@ func TestSpectrogram440And880(t *testing.T) {
 			spec[time][f] = math.Abs(spec[time][f]) * invMax
 			if spec[time][f] > threshold {
 				freq := float64(f) * freqBinSize
-				checkFreq(freq, float64(time)*model.DOWNSAMPLERATIO/spr, spec[time][f])
+				checkFreq(freq, float64(time)*model.DownsampleRatio/spr, spec[time][f])
 			}
 		}
 	}

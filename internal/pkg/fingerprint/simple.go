@@ -34,7 +34,7 @@ func (sf *SimpleFingerprinter) Fingerprint(songID uint32, cMap []model.Constella
 	for i := 0; i+sf.lastOffset < length; i++ {
 		anchor := cMap[i]
 		for _, p := range cMap[i+sf.anchorOffset : i+sf.lastOffset] {
-			res[model.NewTableKey(anchor, p).Encode()] = *model.NewTableValue(songID, anchor)
+			res[model.NewAnchorKey(anchor, p).Encode()] = *model.NewTableValue(songID, anchor)
 		}
 	}
 

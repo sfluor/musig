@@ -34,7 +34,7 @@ func NewSpectrogrammer(dsRatio, maxFreq, binSize float64) *Spectrogrammer {
 // Spectrogram reads the provided audio file and returns a spectrogram for it
 // Matrix is in the following format:
 // TIME : FREQUENCY : Value
-// time is t * binSize * dsp.DOWNSAMPLERATIO / reader.SampleRate()
+// time is t * binSize * dsp.DownsampleRatio / reader.SampleRate()
 // frequency is f * freqBinSize
 func (s *Spectrogrammer) Spectrogram(file *os.File) ([][]float64, float64, error) {
 	reader, err := sound.NewWAVReader(file)

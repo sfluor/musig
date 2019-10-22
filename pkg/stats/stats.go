@@ -1,6 +1,33 @@
 package stats
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
+
+// Correlation computes the correlation between 2 series of points
+// the length used is x's
+func Correlation(x []float64, y []float64) float64 {
+	n := len(x)
+	meanX, meanY := Avg(x[:n]), Avg(y[:n])
+
+	sXY := 0.0
+	sX := 0.0
+	sY := 0.0
+
+	for i, xp := range x {
+		dx := xp - meanX
+		dy := y[i] - meanY
+
+		sX +=  dx * dx
+		sY +=  dy * dy
+
+		sXY += dx * dy
+	}
+	fmt.Printf("sx: %f, sy: %f, sxy: %f\n", sX, sY, sXY)
+
+	return sXY / (math.Sqrt(sX) * math.Sqrt(sY))
+}
 
 // AbsMax returns max(|x| for x in arr)
 func AbsMax(arr []float64) float64 {

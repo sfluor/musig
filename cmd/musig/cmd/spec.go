@@ -36,7 +36,7 @@ func genSpectrogram(path string, imgPath string) error {
 	}
 	defer file.Close()
 
-	s := dsp.NewSpectrogrammer(model.DOWNSAMPLERATIO, model.MAXFREQ, model.SAMPLESIZE)
+	s := dsp.NewSpectrogrammer(model.DownsampleRatio, model.MaxFreq, model.SampleSize)
 
 	spec, _, err := s.Spectrogram(file)
 	if err != nil {

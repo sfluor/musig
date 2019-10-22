@@ -22,11 +22,11 @@ func TestFingerprinting440And880(t *testing.T) {
 }
 
 func testFingerprintingOnFile(t *testing.T, path string) {
-	sampleSize := model.SAMPLESIZE
+	sampleSize := model.SampleSize
 
 	s := dsp.NewSpectrogrammer(
-		model.DOWNSAMPLERATIO,
-		model.MAXFREQ,
+		model.DownsampleRatio,
+		model.MaxFreq,
 		sampleSize,
 	)
 

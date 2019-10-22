@@ -24,7 +24,7 @@ func NewDefaultPipeline(dbFile string) (*Pipeline, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "error connection to database at: %s", dbFile)
 	}
-	s := dsp.NewSpectrogrammer(model.DOWNSAMPLERATIO, model.MAXFREQ, model.SAMPLESIZE)
+	s := dsp.NewSpectrogrammer(model.DownsampleRatio, model.MaxFreq, model.SampleSize)
 	fpr := fingerprint.NewDefaultFingerprinter()
 
 	return &Pipeline{
