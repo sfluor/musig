@@ -68,7 +68,7 @@ func (db *BoltDB) Get(keys []model.EncodedKey) (map[model.EncodedKey][]model.Tab
 		return nil
 	})
 
-	return res, errors.Wrap(err, "an error occured when reading from bolt")
+	return res, errors.Wrap(err, "an error occurred when reading from bolt")
 }
 
 // Set stores the list of (key, value) into the bolt file
@@ -90,7 +90,7 @@ func (db *BoltDB) Set(batch map[model.EncodedKey]model.TableValue) error {
 		return nil
 	})
 
-	return errors.Wrap(err, "an error occured when writing to bolt")
+	return errors.Wrap(err, "an error occurred when writing to bolt")
 }
 
 // GetSongID does a song name => songID lookup in the database
@@ -113,7 +113,7 @@ func (db *BoltDB) GetSongID(name string) (uint32, error) {
 		return fmt.Errorf("could not find id for song name: %s", name)
 	})
 
-	return id, errors.Wrap(err, "an error occured when reading from bolt")
+	return id, errors.Wrap(err, "an error occurred when reading from bolt")
 }
 
 // GetSong does a songID => song name lookup in the database
@@ -133,7 +133,7 @@ func (db *BoltDB) GetSong(songID uint32) (string, error) {
 		return nil
 	})
 
-	return name, errors.Wrap(err, "an error occured when reading from bolt")
+	return name, errors.Wrap(err, "an error occurred when reading from bolt")
 }
 
 // SetSong stores a song name in the database and returns it's song ID
@@ -163,7 +163,7 @@ func (db *BoltDB) SetSong(song string) (uint32, error) {
 		return errors.Wrap(b.Put(rawKey, []byte(song)), "error setting song")
 	})
 
-	return songID, errors.Wrap(err, "an error occured when writing to bolt")
+	return songID, errors.Wrap(err, "an error occurred when writing to bolt")
 }
 
 func itob(s uint32) []byte {
