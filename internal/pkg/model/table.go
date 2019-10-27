@@ -8,7 +8,7 @@ import (
 
 // Used to down size the frequences to a 9 bit ints
 // XXX: we could also use 10.7Hz directly
-const freqStep = MAXFREQ / float64(1<<9)
+const freqStep = MaxFreq / float64(1<<9)
 
 // Used to down size the delta times to 14 bit ints (we use 16s as the max duration)
 const deltaTimeStep = 16 / float64(1<<14)
@@ -16,8 +16,8 @@ const deltaTimeStep = 16 / float64(1<<14)
 // TableValueSize represents the TableValueSize when encoded in bytes
 const TableValueSize = 8
 
-// TableKey represents a table key
-type TableKey struct {
+// AnchorKey represents a anchor key
+type AnchorKey struct {
 	// Frequency of the anchor point for the given point's target zone
 	AnchorFreq float64
 	// Frequency of the given point
@@ -29,9 +29,9 @@ type TableKey struct {
 // EncodedKey represents an encoded key
 type EncodedKey uint32
 
-// NewTableKey creates a new table key from the given anchor and the given point
-func NewTableKey(anchor, point ConstellationPoint) *TableKey {
-	return &TableKey{
+// NewAnchorKey creates a new anchor key from the given anchor and the given point
+func NewAnchorKey(anchor, point ConstellationPoint) *AnchorKey {
+	return &AnchorKey{
 		AnchorFreq: anchor.Freq,
 		PointFreq:  point.Freq,
 		// Use absolute just in case anchor is after the target zone
@@ -47,13 +47,13 @@ func (ek EncodedKey) Bytes() []byte {
 	return bk
 }
 
-// Encode encodes the table key using:
+// Encode encodes the anchor key using:
 // 9 bits for the “frequency of the anchor”: fa
 // 9 bits for the ” frequency of the point”: fp
 // 14 bits for the ”delta time between the anchor and the point”: dt
 // The result is then dt | fa | fp
 // XXX: this only works if frequencies are coded in 9 bits or less (if we used a 1024 samples FFT, it will be the case)
-func (tk *TableKey) Encode() EncodedKey {
+func (tk *AnchorKey) Encode() EncodedKey {
 	// down size params
 	fp := uint32(tk.PointFreq / freqStep)
 	fa := uint32(tk.AnchorFreq / freqStep)

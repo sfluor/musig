@@ -75,7 +75,7 @@ func TestArgAbove(t *testing.T) {
 		{
 			[]float64{-100, 101},
 			101.1,
-			[]int{},
+			nil,
 		},
 		{
 			[]float64{-100, 100, 50},

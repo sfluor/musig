@@ -6,14 +6,14 @@ import (
 	"strings"
 )
 
-// DOWNSAMPLERATIO is the default down sample ratio (4)
-const DOWNSAMPLERATIO = 4
+// DownsampleRatio is the default down sample ratio (4)
+const DownsampleRatio = 4
 
-// SAMPLESIZE is the default sample size (1024)
-const SAMPLESIZE = 1024.0
+// SampleSize is the default sample size (1024)
+const SampleSize = 1024.0
 
-// MAXFREQ is 5kHz
-const MAXFREQ = 5000.0
+// MaxFreq is 5kHz
+const MaxFreq = 5000.0
 
 // ConstellationPoint represents a point in the constellation map (time + frequency)
 type ConstellationPoint struct {

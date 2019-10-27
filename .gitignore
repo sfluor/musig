@@ -15,3 +15,5 @@ bin/*
 
 # Ignore dataset by default
 assets/dataset/*
+
+.idea/

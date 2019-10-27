@@ -12,6 +12,7 @@ import (
 func init() {
 	rootCmd.AddCommand(loadCmd)
 	loadCmd.Flags().BoolP("dry-run", "d", false, "disable saving to the database")
+	loadCmd.Flags().BoolP("reset", "r", false, "reset the database if it already exists")
 	loadCmd.Flags().BoolP("verbose", "v", false, "enable verbose output")
 }
 
@@ -27,6 +28,14 @@ var loadCmd = &cobra.Command{
 		if files == nil {
 			log.Infof("no files matched pattern: %s", args[0])
 			os.Exit(0)
+		}
+
+		resetDB, err := cmd.Flags().GetBool("reset")
+		if resetDB && err == nil {
+			log.Info("removing the existing database...")
+			if err := os.Remove(dbFile); err != nil {
+				log.Errorf("Error removing the database at %s: %s", dbFile, err)
+			}
 		}
 
 		p, err := pipeline.NewDefaultPipeline(dbFile)
