@@ -5,8 +5,8 @@ import (
 
 	"github.com/gordonklaus/portaudio"
 	"github.com/pkg/errors"
-	riff "github.com/youpy/go-riff"
-	wav "github.com/youpy/go-wav"
+	"github.com/youpy/go-riff"
+	"github.com/youpy/go-wav"
 )
 
 var _ Reader = &WAVReader{}
