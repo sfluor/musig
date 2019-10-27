@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	log "github.com/sirupsen/logrus"
 	"os"
 	"path"
 	"time"
@@ -22,8 +23,13 @@ var listenCmd = &cobra.Command{
 		dur, err := cmd.Flags().GetDuration("duration")
 		failIff(err, "could not get duration, got: %v", dur)
 
+		defer func() {
+			if err := os.Remove(name); err != nil {
+				log.Errorf("Failed to remove temporary file stored at %s used to record the sample: %s", name , err)
+			}
+		}()
+
 		recordAudioToFile(name, dur)
 		cmdRead(name)
-		// todo remove
 	},
 }
