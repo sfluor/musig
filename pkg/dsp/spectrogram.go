@@ -18,16 +18,19 @@ type Spectrogrammer struct {
 	// thresholdCoefficient is used to filter out the important frequencies
 	// increasing it decreases the size of the constellation maps returned
 	thresholdCoefficient float64
+	// windowing is used to activate / deactivate the windowing function
+	windowing bool
 }
 
 // NewSpectrogrammer creates a new spectrogrammer
-func NewSpectrogrammer(dsRatio, maxFreq, binSize float64) *Spectrogrammer {
+func NewSpectrogrammer(dsRatio, maxFreq, binSize float64, windowing bool) *Spectrogrammer {
 	return &Spectrogrammer{
 		dsRatio: dsRatio,
 		maxFreq: maxFreq,
 		binSize: binSize,
 		// TODO stop hardcoding this
 		thresholdCoefficient: 1,
+		windowing: windowing,
 	}
 }
 
@@ -65,7 +68,9 @@ func (s *Spectrogrammer) Spectrogram(file *os.File) ([][]float64, float64, error
 			lp.Filter(bin[:n]),
 			int(s.dsRatio),
 		)
-		ApplyWindow(sampled, HammingWindow)
+		if s.windowing {
+			ApplyWindow(sampled, HammingWindow)
+		}
 		fft := FFT(sampled)
 
 		// TODO remove slicing here when removing duplicate values returned by the FFT

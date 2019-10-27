@@ -28,6 +28,7 @@ func testFingerprintingOnFile(t *testing.T, path string) {
 		model.DownsampleRatio,
 		model.MaxFreq,
 		sampleSize,
+		true,
 	)
 
 	file, err := os.Open(path)

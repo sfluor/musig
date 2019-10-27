@@ -21,6 +21,8 @@ func TestSpectrogram440(t *testing.T) {
 		model.DownsampleRatio,
 		model.MaxFreq,
 		sampleSize,
+		// No windowing for tests since we want to verify that frequency are in the correct range
+		false,
 	)
 
 	file, err := os.Open(path.Join(AssetsDir, "440.wav"))
@@ -75,6 +77,8 @@ func TestSpectrogram440And880(t *testing.T) {
 		model.DownsampleRatio,
 		model.MaxFreq,
 		sampleSize,
+		// No windowing for tests since we want to verify that frequency are in the correct range
+		false,
 	)
 
 	file, err := os.Open(path.Join(AssetsDir, "440_880.wav"))
