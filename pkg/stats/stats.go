@@ -1,7 +1,6 @@
 package stats
 
 import (
-	"fmt"
 	"math"
 )
 
@@ -24,7 +23,6 @@ func Correlation(x []float64, y []float64) float64 {
 
 		sXY += dx * dy
 	}
-	fmt.Printf("sx: %f, sy: %f, sxy: %f\n", sX, sY, sXY)
 
 	return sXY / (math.Sqrt(sX) * math.Sqrt(sY))
 }
@@ -62,7 +60,7 @@ func Avg(arr []float64) float64 {
 
 // ArgAbove returns the indices for the values from the array that are above the given threshold
 func ArgAbove(threshold float64, arr []float64) []int {
-	res := []int{}
+	var res []int
 	for idx, v := range arr {
 		if v > threshold {
 			res = append(res, idx)
