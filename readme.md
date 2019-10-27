@@ -9,7 +9,7 @@ A shazam-like tool that allows you to compute song's fingerprints and reverse lo
 
 You will need to have [go](https://golang.org/doc/install) on your computer (version > 1.11 to be able to use go modules).
 
-You will also need to have [portaudio](http://www.portaudio.com/) installed (`brew install portaudio`, or `apt install portaudio19-dev`)
+You will also need to have [portaudio](http://www.portaudio.com/) installed (`brew install portaudio` on macOS, `apt install portaudio19-dev` on Ubuntu / Debian, for other distributions you can search for the `portaudio` package)
 
 To build the binary:
 
@@ -39,6 +39,10 @@ You can also try to use it with your microphone using the `listen` command:
 
 `./bin/musig listen`
 
+If you want to record a sample and reuse it multiple times after you can also use the `record` command:
+
+`./bin/musig record`
+
 For more details on the usage see the help command:
 
 ```
@@ -52,6 +56,7 @@ Available Commands:
   listen      listen will record the microphone input and try to find a matching song from the database (Ctrl-C will stop the recording)
   load        Load loads all the audio files matching the provided glob into the database (TODO: only .wav are supported for now)
   read        Read reads the given audio file trying to find it's song name
+  record      record will record the microphone input and save the signal to the given file
   spectrogram spectrogram generate a spectrogram image for the given audio file in png (TODO: only .wav are supported for now)
 
 Flags:
@@ -69,4 +74,3 @@ To run the tests you can use `make test` in the root directory.
 
 - [ ] improve the documentation
 - [ ] support for `mp3` files
-- [ ] improve the fingerprinting (using listen gives bad results :sad:)
