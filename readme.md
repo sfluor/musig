@@ -5,6 +5,8 @@
 
 A shazam-like tool that allows you to compute song's fingerprints and reverse lookup song names.
 
+It's more or less an implementation of the shazam paper as described in [this awesome article](http://coding-geek.com/how-shazam-works/)
+
 ## Installation
 
 You will need to have [go](https://golang.org/doc/install) on your computer (version > 1.11 to be able to use go modules).
