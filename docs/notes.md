@@ -22,7 +22,7 @@
 
 - However we also have to be careful about aliasing, we have to apply a low pass filter to avoid it since we now have frequencies from 0kz to 5khz.
 
-# Stero to mono
+# Stereo to mono
 
 We also have to transform stereo to mono
 
