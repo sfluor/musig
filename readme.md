@@ -11,7 +11,7 @@ It's more or less an implementation of the shazam paper as described in [this aw
 
 You will need to have [go](https://golang.org/doc/install) on your computer (version > 1.11 to be able to use go modules).
 
-You will also need to have [portaudio](http://www.portaudio.com/) installed (`brew install portaudio` on macOS, `apt install portaudio19-dev` on Ubuntu / Debian, for other distributions you can search for the `portaudio` package)
+You will also need to have [portaudio](http://www.portaudio.com/) installed (`brew install portaudio` on macOS, `apt install portaudio19-dev` on Ubuntu / Debian, for other distributions you can search for the `portaudio` package), it is required for the `listen` command that listens on your microphone to match the recording against the database.
 
 To build the binary:
 
