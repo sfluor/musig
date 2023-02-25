@@ -13,6 +13,6 @@ require (
 	github.com/youpy/go-riff v0.0.0-20131220112943-557d78c11efb
 	github.com/youpy/go-wav v0.0.0-20160223082350-b63a9887d320
 	go.etcd.io/bbolt v1.3.3
-	golang.org/x/sys v0.0.0-20200219091948-cb0a6d8edb6c // indirect
+	golang.org/x/sys v0.1.0 // indirect
 	gonum.org/v1/gonum v0.0.0-20200222091724-332e2c454720
 )
